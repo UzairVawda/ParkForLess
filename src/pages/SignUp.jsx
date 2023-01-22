@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { AiTwotoneEyeInvisible, AiTwotoneEye } from "react-icons/ai";
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
+import { db } from "../Firebase"
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth"
 import OAuth from "../components/OAuth";
+import { serverTimestamp, setDoc, doc } from "firebase/firestore";
+import {toast} from "react-toastify"
 
 export default function SignUp() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
 		name: "",
     email: "",
@@ -19,12 +23,29 @@ export default function SignUp() {
       [name]: value,
     }));
   }
+
   function togglePassState() {
     setPasswordState((prevVale) => !prevVale);
   }
-  function submitForm(event) {
+  
+  async function submitForm(event) {
     event.preventDefault();
+    try {
+      const auth = getAuth();     
+      const userCred = await createUserWithEmailAndPassword(auth, formData.email, formData.password)
+      updateProfile(auth.currentUser, {
+        displayName : formData.name
+      })
+      const user = userCred.user
+      const { password, ...data } = formData
+      data.createdTimestamp = serverTimestamp();
+      await setDoc(doc(db, "users", user.uid), data);
+      navigate("/");
+    } catch (error) {
+      toast.error("Failed to register!")
+    }
   }
+
   return (
     <section>
       <h1 className="text-4xl text-center mt-6 font-bold">Sign Up</h1>
