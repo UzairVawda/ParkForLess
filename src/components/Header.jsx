@@ -14,7 +14,7 @@ export default function Header() {
 
   return (
     <div className="bg-white border-b shadow-sm sticky top-0 z-500">
-      <header className="flex justify-between items-center px-3 max-w-6xl mx-auto">
+      <header className="flex justify-between items-center px-3 max-w-5xl mx-auto">
         <div>
           <img src={NavImg} alt="logo" className="h-8 cursor-pointer" />
         </div>
@@ -36,8 +36,8 @@ export default function Header() {
             </li>
             <li
               className={`py-3 text-sm font-semibold text-gray-400 cursor-pointer border-b-[3px] border-b-transparent 
-							${ matchRoute("/signin") && "text-black border-b-red-500" }`}
-							onClick={() => navigate("/signin")}
+							${ matchRoute("/sign-in") && "text-black border-b-red-500" }`}
+							onClick={() => navigate("/sign-in")}
             >
               Sign In
             </li>
