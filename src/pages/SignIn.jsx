@@ -1,10 +1,14 @@
 import React, { useState } from "react";
+import {toast} from "react-toastify"
+import { Link, useNavigate } from "react-router-dom";
 import { AiTwotoneEyeInvisible, AiTwotoneEye } from "react-icons/ai";
-import { Link } from "react-router-dom";
 
 import OAuth from "../components/OAuth";
 
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth"
+
 export default function SignIn() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -18,11 +22,20 @@ export default function SignIn() {
       [name]: value,
     }));
   }
+
   function togglePassState() {
     setPasswordState((prevVale) => !prevVale);
   }
-  function submitForm(event) {
+
+  async function submitForm(event) {
     event.preventDefault();
+    try {
+      const auth = getAuth()
+      const userCred = await signInWithEmailAndPassword(auth, formData.email, formData.password)
+      if (userCred) navigate("/")
+    } catch (error) {
+      toast.error("Failed to login")
+    }
   }
   return (
     <section>

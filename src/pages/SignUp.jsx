@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { AiTwotoneEyeInvisible, AiTwotoneEye } from "react-icons/ai";
+import {toast} from "react-toastify"
 import { Link, useNavigate } from "react-router-dom";
+import { AiTwotoneEyeInvisible, AiTwotoneEye } from "react-icons/ai";
+
 import { db } from "../Firebase"
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth"
-import OAuth from "../components/OAuth";
 import { serverTimestamp, setDoc, doc } from "firebase/firestore";
-import {toast} from "react-toastify"
+
+import OAuth from "../components/OAuth";
 
 export default function SignUp() {
   const navigate = useNavigate();

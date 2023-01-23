@@ -14,6 +14,7 @@ export default function ForgotPassword() {
   function submitForm(event) {
     event.preventDefault();
   }
+  
   return (
     <section>
       <h1 className="text-4xl text-center mt-6 font-bold">Forgot Password</h1>
