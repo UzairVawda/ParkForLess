@@ -1,9 +1,13 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import {toast} from "react-toastify"
+import { Link, useNavigate } from "react-router-dom";
 
 import OAuth from "../components/OAuth";
 
+import { getAuth, sendPasswordResetEmail } from "firebase/auth"
+
 export default function ForgotPassword() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
 
   function handleChange(event) {
@@ -11,10 +15,18 @@ export default function ForgotPassword() {
     setEmail(value);
   }
 
-  function submitForm(event) {
+  async function submitForm(event) {
     event.preventDefault();
+    try {
+      const auth = getAuth();
+      await sendPasswordResetEmail(auth, email)
+      toast.success("Sent email")
+      navigate("/sign-in")
+    } catch (error) {
+      toast.error("failed to send email")
+    }
   }
-  
+
   return (
     <section>
       <h1 className="text-4xl text-center mt-6 font-bold">Forgot Password</h1>
