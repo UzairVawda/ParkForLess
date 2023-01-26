@@ -1,9 +1,11 @@
-import { db } from "../Firebase"
+import { db } from "../Firebase";
 import { getAuth, updateProfile } from "firebase/auth";
 import { updateDoc, doc } from "firebase/firestore";
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
+import { AiOutlineHome } from "react-icons/ai";
+import { Link } from "react-router-dom";
 
 export default function Profile() {
   const auth = getAuth();
@@ -30,16 +32,16 @@ export default function Profile() {
     try {
       if (auth.currentUser.displayName !== formData.name) {
         await updateProfile(auth.currentUser, {
-          displayName: formData.name
-        })
-        const docRef = doc(db, "users", auth.currentUser.uid)
+          displayName: formData.name,
+        });
+        const docRef = doc(db, "users", auth.currentUser.uid);
         await updateDoc(docRef, {
-          name : formData.name
-        })
-        toast.success("Updated profile")
+          name: formData.name,
+        });
+        toast.success("Updated profile");
       }
     } catch (error) {
-      toast.error("Failed to update profile")
+      toast.error("Failed to update profile");
     }
   }
 
@@ -71,7 +73,9 @@ export default function Profile() {
               value={formData.email}
               onChange={handleChange}
               disabled
-              className={'w-full px-4 py-2 mb-6 text-xl text-gray-700 bg-white border border-gray-200 rounded-xl transition ease-in-out'}
+              className={
+                "w-full px-4 py-2 mb-6 text-xl text-gray-700 bg-white border border-gray-200 rounded-xl transition ease-in-out"
+              }
             />
             <div className="mb-6 flex justify-between whitespace-nowrap text-sm sm:text-lg">
               <p className="flex items-center">
@@ -94,6 +98,15 @@ export default function Profile() {
               </p>
             </div>
           </form>
+          <button
+            type="submit"
+            className="w-full bg-emerald-400 text-white uppercase px-7 py-3 text-medium font-medium rounded shadow-md hover:bg-emerald-500 transition duration-150 ease-in-out hover:shadow-lg"
+          >
+            <Link to="/create-listing" className="flex justify-center items-center">
+              <AiOutlineHome className="mr-2 text-3xl bg-blue-300 rounded-full p-1 border-2"/>
+              Rent Or Sell
+            </Link>
+          </button>
         </div>
       </section>
     </>

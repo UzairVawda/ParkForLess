@@ -50,7 +50,7 @@ export default function Header() {
               <li
               className={`py-3 text-sm font-semibold text-gray-400 cursor-pointer border-b-[3px] border-b-transparent 
               ${ matchRoute("/reviews") && "text-black border-b-red-500" }`}
-              onClick={() => navigate("/profile")}
+              onClick={() => navigate("/reviews")}
             >
               Reviews
             </li>
