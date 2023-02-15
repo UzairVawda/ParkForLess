@@ -116,6 +116,7 @@ export default function CreateListing() {
         );
       });
     }
+
     const imgUrls = await Promise.all(
       [...formData.images].map((image) => storeImage(image))
     ).catch((error) => {
@@ -129,11 +130,12 @@ export default function CreateListing() {
       imgUrls,
       geolocation,
       timestamp: serverTimestamp(),
+      userRef: auth.currentUser.uid,
     };
     delete copyFormData.images;
     !copyFormData.offer && delete copyFormData.discountedPrice;
-    delete formData.latitude;
-    delete formData.longitude;
+    delete copyFormData.latitude;
+    delete copyFormData.longitude;
     const docRef = await addDoc(collection(db, "listings"), copyFormData);
     setLoading(false);
     toast.success("Listing Created!");

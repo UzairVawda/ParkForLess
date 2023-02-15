@@ -1,11 +1,20 @@
 import { db } from "../Firebase";
 import { getAuth, updateProfile } from "firebase/auth";
-import { updateDoc, doc } from "firebase/firestore";
-import React, { useState } from "react";
+import {
+  updateDoc,
+  doc,
+  collection,
+  query,
+  where,
+  getDocs,
+  orderBy,
+} from "firebase/firestore";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { AiOutlineHome } from "react-icons/ai";
 import { Link } from "react-router-dom";
+import ListingTile from "../components/ListingTile";
 
 export default function Profile() {
   const auth = getAuth();
@@ -15,6 +24,8 @@ export default function Profile() {
     email: auth.currentUser.email,
   });
   const [changeDetails, setChangeDetails] = useState(false);
+  const [listings, setListings] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -27,6 +38,30 @@ export default function Profile() {
   function toggleChangeDetails() {
     setChangeDetails((prevValue) => !prevValue);
   }
+
+  useEffect(() => {
+    async function fetchUserListings() {
+      const listingRef = collection(db, "listings");
+      const q = query(
+        listingRef,
+        where("userRef", "==", auth.currentUser.uid),
+        orderBy("timestamp", "desc")
+      );
+      const querySnap = await getDocs(q);
+      let listings = [];
+      querySnap.forEach((doc) => {
+        return listings.push({
+          id: doc.id,
+          data: doc.data(),
+        });
+      });
+      setListings(listings);
+      setLoading(false);
+    }
+    fetchUserListings();
+  }, [auth.currentUser.uid]);
+
+  console.log(listings);
 
   async function onSubmit() {
     try {
@@ -64,7 +99,7 @@ export default function Profile() {
               onChange={handleChange}
               disabled={!changeDetails}
               className={`w-full px-4 py-2 mb-6 text-xl text-gray-700 bg-white border border-gray-200 rounded-xl transition ease-in-out ${
-                changeDetails && "bg-red-100 focus:bg-red-10"
+                changeDetails && "bg-blue-100 focus:bg-blue-10"
               }`}
             />
             <input
@@ -102,13 +137,34 @@ export default function Profile() {
             type="submit"
             className="w-full bg-emerald-400 text-white uppercase px-7 py-3 text-medium font-medium rounded shadow-md hover:bg-emerald-500 transition duration-150 ease-in-out hover:shadow-lg"
           >
-            <Link to="/create-listing" className="flex justify-center items-center">
-              <AiOutlineHome className="mr-2 text-3xl bg-blue-300 rounded-full p-1 border-2"/>
+            <Link
+              to="/create-listing"
+              className="flex justify-center items-center"
+            >
+              <AiOutlineHome className="mr-2 text-3xl bg-blue-300 rounded-full p-1 border-2" />
               Rent Or Sell
             </Link>
           </button>
         </div>
       </section>
+      <div className="max-w-6xl px-3 mt-6 mx-auto">
+        {!loading && listings.length > 0 && (
+          <>
+            <h2 className="text-2xl text-center font-semibold mb-6">
+              My Listings
+            </h2>
+            <ul className="sm:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+              {listings.map((listing) => (
+                <ListingTile
+                  key={listing.id}
+                  id={listing.id}
+                  listing={listing.data}
+                />
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
     </>
   );
 }
