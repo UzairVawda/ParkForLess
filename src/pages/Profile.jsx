@@ -8,6 +8,7 @@ import {
   where,
   getDocs,
   orderBy,
+  deleteDoc,
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -61,8 +62,6 @@ export default function Profile() {
     fetchUserListings();
   }, [auth.currentUser.uid]);
 
-  console.log(listings);
-
   async function onSubmit() {
     try {
       if (auth.currentUser.displayName !== formData.name) {
@@ -84,6 +83,21 @@ export default function Profile() {
     event.preventDefault();
     auth.signOut();
     navigate("/");
+  }
+
+  async function onDelete(listingID) {
+    // if (window.confirm("Are you sure you want to delete?")) {
+    await deleteDoc(doc(db, "listings", listingID));
+    const updatedListings = listings.filter(
+      (listing) => listing.id !== listingID
+    );
+    setListings(updatedListings);
+    toast.success("Successfully deleted the listing");
+    // }
+  }
+
+  function onEdit(id) {
+    navigate(`/edit-listing/${id}`);
   }
 
   return (
@@ -159,6 +173,8 @@ export default function Profile() {
                   key={listing.id}
                   id={listing.id}
                   listing={listing.data}
+                  onDelete={onDelete}
+                  onEdit={onEdit}
                 />
               ))}
             </ul>
