@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { db } from "../Firebase";
 import { doc, getDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 import Spinner from "../components/Spinner";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore, {
@@ -14,14 +15,17 @@ import "swiper/css/bundle";
 import { FaRegPaperPlane, FaBath, FaParking, FaCouch } from "react-icons/fa";
 import { SiGooglemaps } from "react-icons/si";
 import { RiHotelBedFill } from "react-icons/ri";
+import ContactForm from "../components/ContactForm";
 
 export default function Listing() {
+  const auth = getAuth();
   const params = useParams();
+  const [contactLandlord, setContactLandlord] = useState(false);
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [shareLinkCopied, setShareLinkCopied] = useState(false);
   SwiperCore.use([Autoplay, Navigation, Pagination]);
-
+  console.log(contactLandlord);
   useEffect(() => {
     async function fetchSpecificListing() {
       const docRef = doc(db, "listings", params.id);
@@ -77,7 +81,7 @@ export default function Listing() {
       )}
 
       <div className="m-4 p-4 rounded bg-white shadow-lg flex flex-col md:flex-row max-w-6xl lg:mx-auto lg:space-x-5">
-        <div className="w-full h-[200px] lg:h-[500px]">
+        <div className="w-full">
           <p className="text-2xl font-bold mb-3 text-blue-900">
             {listing.name} - ${" "}
             {listing.offer
@@ -110,7 +114,7 @@ export default function Listing() {
             <span className="font-semibold">Description - </span>{" "}
             {listing.description}
           </p>
-          <ul className="flex items-center space-x-2 sm:space-x-10 text-sm font-semibold">
+          <ul className="flex items-center space-x-2 sm:space-x-10 text-sm font-sem">
             <li className="flex items center whitespace-nowrap">
               <FaBath className="text-lg mr-3" />
               {"   "}
@@ -132,8 +136,22 @@ export default function Listing() {
               {listing.furnished ? "Furnished" : "Not Furnished"}
             </li>
           </ul>
+          {listing.userRef !== auth.currentUser?.uid && !contactLandlord && (
+            <div className="my-5">
+              <button
+                onClick={() => setContactLandlord(true)}
+                className="w-full bg-blue-500 px-7 py-3 text-white rounded-md uppercase shadow-mg 
+					hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg transition duration ease-in-out"
+              >
+                Contact Landlord
+              </button>
+            </div>
+          )}
+          {contactLandlord && (
+            <ContactForm userRef={listing.userRef} listing={listing} />
+          )}
         </div>
-        <div className="bg-blue-200 w-full h-[200px] lg:h-[500px] z-10 overflow-x-hidden"></div>
+        <div className="bg-blue-200 w-full z-10 overflow-x-hidden"></div>
       </div>
     </main>
   );
