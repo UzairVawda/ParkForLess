@@ -28,19 +28,19 @@ export default function Home() {
           listingRef,
           where("offer", "==", true),
           orderBy("timestamp", "desc"),
-          limit(5)
+          limit(4)
         );
         const qRent = query(
           listingRef,
           where("type", "==", "rent"),
           orderBy("timestamp", "desc"),
-          limit(5)
+          limit(4)
         );
         const qSell = query(
           listingRef,
           where("type", "==", "sell"),
           orderBy("timestamp", "desc"),
-          limit(5)
+          limit(4)
         );
         const qOfferSnap = await getDocs(qOffer);
         const qRentSnap = await getDocs(qRent);
