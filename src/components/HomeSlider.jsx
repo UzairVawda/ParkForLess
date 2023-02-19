@@ -55,13 +55,12 @@ export default function HomeSlider() {
     listings && (
       <>
         <Swiper
-          Autoplay
           slidesPerView={1}
           navigation
           pagination={{ type: "progressbar" }}
           effect="fade"
           modules={[EffectFade]}
-          autoplay={{ delay: 5000 }}
+          autoPlay={{ delay: 5000 }}
         >
           {listings.map(({ id, data }) => (
             <SwiperSlide
