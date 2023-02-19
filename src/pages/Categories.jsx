@@ -12,8 +12,11 @@ import { db } from "../Firebase";
 import { toast } from "react-toastify";
 import Spinner from "../components/Spinner";
 import ListingTile from "../components/ListingTile";
+import { useParams } from "react-router";
 
 export default function Offers() {
+  const params = useParams();
+  const type = params.type;
   const [loading, setLoading] = useState(true);
   const [offerListings, setOfferListings] = useState(null);
   const [lastFetchedListings, setLastFetchedListings] = useState(null);
@@ -22,12 +25,22 @@ export default function Offers() {
     async function getListings() {
       try {
         const listingRef = collection(db, "listings");
-        const qOffer = query(
-          listingRef,
-          where("offer", "==", true),
-          orderBy("timestamp", "desc"),
-          limit(4)
-        );
+        let qOffer;
+        if (type === "offer") {
+          qOffer = query(
+            listingRef,
+            where("offer", "==", true),
+            orderBy("timestamp", "desc"),
+            limit(4)
+          );
+        } else {
+          qOffer = query(
+            listingRef,
+            where("type", "==", type),
+            orderBy("timestamp", "desc"),
+            limit(4)
+          );
+        }
         const qOfferSnap = await getDocs(qOffer);
         const lastVisible = qOfferSnap.docs[qOfferSnap.docs.length - 1];
         setLastFetchedListings(lastVisible);
@@ -46,18 +59,29 @@ export default function Offers() {
       }
     }
     getListings();
-  }, []);
+  }, [type]);
 
   async function fetchMoreListings() {
     try {
       const listingRef = collection(db, "listings");
-      const qOffer = query(
-        listingRef,
-        where("offer", "==", true),
-        orderBy("timestamp", "desc"),
-        startAfter(lastFetchedListings),
-        limit(4)
-      );
+      let qOffer;
+      if (type === "offer") {
+        qOffer = query(
+          listingRef,
+          where("offer", "==", true),
+          orderBy("timestamp", "desc"),
+          startAfter(lastFetchedListings),
+          limit(4)
+        );
+      } else {
+        qOffer = query(
+          listingRef,
+          where("type", "==", type),
+          orderBy("timestamp", "desc"),
+          startAfter(lastFetchedListings),
+          limit(4)
+        );
+      }
       const qOfferSnap = await getDocs(qOffer);
       const lastVisible = qOfferSnap.docs[qOfferSnap.docs.length - 1];
       setLastFetchedListings(lastVisible);
@@ -82,7 +106,9 @@ export default function Offers() {
 
   return (
     <div className="max-w-6xl mx-auto px-3">
-      <h2 className="text-3xl text-center mt-6 font-bold">All Offers</h2>
+      <h2 className="text-3xl text-center mt-6 font-bold">
+        {type !== "offer" ? `Places for ${type}` : "All Offers"}
+      </h2>
       {offerListings && offerListings.length > 0 ? (
         <>
           <main>

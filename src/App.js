@@ -1,5 +1,5 @@
 import Home from "./pages/Home";
-import Offers from "./pages/Offers"
+import Categories from "./pages/Categories"
 import ForgotPassword from "./pages/ForgotPassword"
 import Profile from "./pages/Profile";
 import SignIn from "./pages/SignIn"
@@ -26,7 +26,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
-          <Route path="/offers" element={<Offers />} />
+          <Route path="/category/:type" element={<Categories />} />
           <Route path="/category/:type/:id" element={<Listing />} />
           <Route path="/profile" element={<PrivateRoute />}>
             <Route path="/profile" element={<Profile />} />
